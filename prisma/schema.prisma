@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum NycPresence {
+  NYC_OFFICE
+  NYC_HYBRID
+  NYC_REMOTE_ALLOWED
+  UNKNOWN
+}
+
+enum Industry {
+  FINTECH
+  HEALTH
+  DEVTOOLS
+  AI
+  MARKETPLACE
+  CONSUMER
+  B2B_SAAS
+  OTHER
+}
+
+enum HiringStatus {
+  ACTIVELY_INTERVIEWING
+  RECENTLY_POSTED
+  HIRING
+  UNKNOWN
+}
+
+enum ListingStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Company {
+  id             String       @id @default(uuid()) @db.Uuid
+  name           String       @unique
+  slug           String       @unique
+  description    String
+  websiteUrl     String
+  careersUrl     String?
+  nycPresence    NycPresence
+  industry       Industry
+  hiringStatus   HiringStatus
+  badges         String[]     @db.Text
+  roleLinks      Json
+  isLive         Boolean      @default(true)
+  lastVerifiedAt DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model ListingRequest {
+  id               String        @id @default(uuid()) @db.Uuid
+  companyName      String
+  websiteUrl       String
+  nycPresenceNotes String?
+  roleLinks        Json
+  contactEmail     String
+  status           ListingStatus @default(PENDING)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+}
